@@ -131,6 +131,10 @@ type IssueFields struct {
 	Unknowns             tcontainer.MarshalMap
 }
 
+type DeleteIssueOptions struct {
+	DeleteSubTasks string `url:"deleteSubTasks,omitempty"`
+}
+
 // MarshalJSON is a custom JSON marshal function for the IssueFields structs.
 // It handles JIRA custom fields and maps those from / to "Unknowns" key.
 func (i *IssueFields) MarshalJSON() ([]byte, error) {
@@ -579,6 +583,33 @@ func (s *IssueService) Create(issue *Issue) (*Issue, *Response, error) {
 		return nil, resp, fmt.Errorf("Could not unmarshall the data into struct")
 	}
 	return responseIssue, resp, nil
+}
+
+// Delete an existing issue.
+//
+// JIRA API docs: https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-deleteIssue
+func (s *IssueService) Delete(issueID string, deleteSubTasks bool) (*Response, error) {
+	var err error
+	url := fmt.Sprint("rest/api/2/issue/%s", issueID)
+	if deleteSubTasks {
+		opts := DeleteIssueOptions{DeleteSubTasks:"true"}
+		url, err = addOptions("deleteSubtasks", &opts)
+		if err != nil {
+			// incase of error return the resp for further inspection
+			return nil, err
+		}
+	}
+	req, err := s.client.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		// incase of error return the resp for further inspection
+		return resp, err
+	}
+
+	return resp, nil
 }
 
 // AddComment adds a new comment to issueID.
