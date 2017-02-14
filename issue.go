@@ -439,7 +439,7 @@ type SearchOptions struct {
 	// MaxResults: The maximum number of projects to return per page. Default: 50.
 	MaxResults int `url:"maxResults,omitempty"`
 	// Expand: Expand specific sections in the returned issues
-	Expand string `url:expand,omitempty"`
+	Expand string `url:"expand,omitempty"`
 }
 
 // searchResult is only a small wrapper around the Search (with JQL) method
@@ -592,7 +592,7 @@ func (s *IssueService) Delete(issueID string, deleteSubTasks bool) (*Response, e
 	var err error
 	url := fmt.Sprint("rest/api/2/issue/%s", issueID)
 	if deleteSubTasks {
-		opts := DeleteIssueOptions{DeleteSubTasks:"true"}
+		opts := DeleteIssueOptions{DeleteSubTasks: "true"}
 		url, err = addOptions("deleteSubtasks", &opts)
 		if err != nil {
 			// incase of error return the resp for further inspection
