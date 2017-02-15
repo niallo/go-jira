@@ -132,7 +132,7 @@ type IssueFields struct {
 }
 
 type DeleteIssueOptions struct {
-	DeleteSubTasks string `url:"deleteSubTasks,omitempty"`
+	DeleteSubtasks string `url:"deleteSubtasks"`
 }
 
 // MarshalJSON is a custom JSON marshal function for the IssueFields structs.
@@ -590,10 +590,10 @@ func (s *IssueService) Create(issue *Issue) (*Issue, *Response, error) {
 // JIRA API docs: https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-deleteIssue
 func (s *IssueService) Delete(issueID string, deleteSubTasks bool) (*Response, error) {
 	var err error
-	url := fmt.Sprint("rest/api/2/issue/%s", issueID)
+	url := fmt.Sprintf("rest/api/2/issue/%s", issueID)
 	if deleteSubTasks {
-		opts := DeleteIssueOptions{DeleteSubTasks: "true"}
-		url, err = addOptions("deleteSubtasks", &opts)
+		opts := DeleteIssueOptions{DeleteSubtasks: "true"}
+		url, err = addOptions(url, &opts)
 		if err != nil {
 			// incase of error return the resp for further inspection
 			return nil, err
